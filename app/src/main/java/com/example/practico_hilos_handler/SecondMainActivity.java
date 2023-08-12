@@ -7,9 +7,11 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Layout;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -43,6 +45,7 @@ public class SecondMainActivity extends AppCompatActivity {
     Button btnBackToMenu;
     TextView txtTittle;
     LinearLayout main;
+    Component component;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +53,7 @@ public class SecondMainActivity extends AppCompatActivity {
         main=findViewById(R.id.main);
         txtTittle = findViewById(R.id.txtTittle);
         btnBackToMenu = findViewById(R.id.btnBackToMenu);
+        main = findViewById(R.id.layoutComponent);
         // 0 es el valor por defecto si no se encuentra "option"
         Intent intent = getIntent();
         int option = intent.getIntExtra("option", 0);
@@ -64,18 +68,34 @@ public class SecondMainActivity extends AppCompatActivity {
         initProyect(option);
     }
     public void initProyect(int option){
+        /*Instanciamos la clase y le pasamos como parametro el
+          Linearlayout donde agregaremos etiquetas con sus propiedades*/
+        component = new Component(main);
         switch (option) {
             case 1:
+                /**Ocupamos las funciones de la clase para
+                 * agregar 2 inputs y 1 boton con su evento*/
                 title(option);
                 description(option);
+                component.addEditText("input1");
+                component.addEditText("input1");
+                /**pasamos como parametro el ID , texto del boton y su eventoClick
+                 * que debe de ser una expresion lambda con una funcion
+                 * Dentro de la funcion se muestra como acceder a los componentes
+                 * creados con la clase*/
+                component.addButton("btn1","Descargar",v->hola());
+                component.addTextView("txt1","hola mundo");
                 break;
             case 2:
                 title(option);
                 description(option);
+                component.addButton("btn1","Procesar",v ->hola());
+                component.addTextView("txt1","hola");
                 break;
             case 3:
                 title(option);
                 description(option);
+
                 break;
             case 4:
                 title(option);
@@ -117,18 +137,28 @@ public class SecondMainActivity extends AppCompatActivity {
                 // Manejar opción no válida si es necesario
                 break;
         }
+        component.render();
     }
     public void title(int t){
         TextView title=new TextView(this);
-        title.setText(titles[t-1].toString());
+        title.setText(titles[t-1]);
         title.setTextSize(20);
         title.setTypeface(null, Typeface.BOLD);
         main.addView(title);
     }
     public void description(int d){
         TextView description=new TextView(this);
-        description.setText(descriptions[d-1].toString());
+        description.setText(descriptions[d-1]);
         description.setTextSize(15);
         main.addView(description);
+    }
+    public void hola(){
+        /**
+         * Usamos la funcion getViewById para obtener el componente que creamos pasando
+         * como parametro el ID que le asignamos y lo casteamos
+         * al tipo de objeto al que pertenece Button, TextView,etc ...**/
+        TextView txt  = (TextView) component.getViewById("txt1");
+        txt.setText("Brutal todo");
+        Toast.makeText(this,"holaaaa",Toast.LENGTH_SHORT).show();
     }
 }
