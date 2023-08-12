@@ -9,6 +9,7 @@ import android.text.Layout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -78,7 +79,7 @@ public class SecondMainActivity extends AppCompatActivity {
                 title(option);
                 description(option);
                 component.addEditText("input1");
-                component.addEditText("input1");
+                component.addEditText("input2");
                 /**pasamos como parametro el ID , texto del boton y su eventoClick
                  * que debe de ser una expresion lambda con una funcion
                  * Dentro de la funcion se muestra como acceder a los componentes
@@ -158,7 +159,8 @@ public class SecondMainActivity extends AppCompatActivity {
          * como parametro el ID que le asignamos y lo casteamos
          * al tipo de objeto al que pertenece Button, TextView,etc ...**/
         TextView txt  = (TextView) component.getViewById("txt1");
-        txt.setText("Brutal todo");
+        EditText input = (EditText) component.getViewById("input1");
+        txt.setText(input.getText().toString());
         Toast.makeText(this,"holaaaa",Toast.LENGTH_SHORT).show();
     }
 }
