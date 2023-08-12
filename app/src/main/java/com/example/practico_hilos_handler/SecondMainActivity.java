@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Layout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,53 +47,48 @@ public class SecondMainActivity extends AppCompatActivity {
     };
     Button btnBackToMenu;
     TextView txtTittle;
-    LinearLayout main;
+    LinearLayout section;
     Component component;
+    Handler handler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second_main);
-        main=findViewById(R.id.main);
+        handler=new Handler(Looper.getMainLooper());
         txtTittle = findViewById(R.id.txtTittle);
         btnBackToMenu = findViewById(R.id.btnBackToMenu);
-        main = findViewById(R.id.layoutComponent);
+        section = findViewById(R.id.layoutComponent);
         // 0 es el valor por defecto si no se encuentra "option"
         Intent intent = getIntent();
         int option = intent.getIntExtra("option", 0);
         txtTittle.setText("Ejercicio "+option);
         txtTittle.setTypeface(null, Typeface.BOLD);
-        btnBackToMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        btnBackToMenu.setOnClickListener(view -> finish());
         initProyect(option);
     }
     public void initProyect(int option){
         /*Instanciamos la clase y le pasamos como parametro el
           Linearlayout donde agregaremos etiquetas con sus propiedades*/
-        component = new Component(main);
+        component = new Component(section);
         switch (option) {
             case 1:
                 /**Ocupamos las funciones de la clase para
                  * agregar 2 inputs y 1 boton con su evento*/
                 title(option);
                 description(option);
-                component.addEditText("input1");
-                component.addEditText("input1");
+                //component.addEditText("input1");
+                //component.addEditText("input1");
                 /**pasamos como parametro el ID , texto del boton y su eventoClick
                  * que debe de ser una expresion lambda con una funcion
                  * Dentro de la funcion se muestra como acceder a los componentes
                  * creados con la clase*/
-                component.addButton("btn1","Descargar",v->hola());
-                component.addTextView("txt1","hola mundo");
+                component.addButton("btn1","Descargar",v->ej1());
                 break;
             case 2:
                 title(option);
                 description(option);
-                component.addButton("btn1","Procesar",v ->hola());
-                component.addTextView("txt1","hola");
+                //component.addButton("btn1","Procesar",v ->hola());
+                //component.addTextView("txt1","hola");
                 break;
             case 3:
                 title(option);
@@ -144,13 +142,13 @@ public class SecondMainActivity extends AppCompatActivity {
         title.setText(titles[t-1]);
         title.setTextSize(20);
         title.setTypeface(null, Typeface.BOLD);
-        main.addView(title);
+        section.addView(title);
     }
     public void description(int d){
         TextView description=new TextView(this);
         description.setText(descriptions[d-1]);
         description.setTextSize(15);
-        main.addView(description);
+        section.addView(description);
     }
     public void hola(){
         /**
@@ -160,5 +158,61 @@ public class SecondMainActivity extends AppCompatActivity {
         TextView txt  = (TextView) component.getViewById("txt1");
         txt.setText("Brutal todo");
         Toast.makeText(this,"holaaaa",Toast.LENGTH_SHORT).show();
+    }
+    public void ej1(){
+        /*
+        Esto seria la forma de hacerlo con Handlers y Runnables
+        Runnable runnable = new Runnable() {
+        TextView t = new TextView(getApplicationContext());
+        int porcentaje = 0;
+
+            @Override
+            public void run() {
+                if (porcentaje <= 100) {
+                section.removeView(t);
+                t.setText("Descargando Imagen: " + porcentaje + "%");
+                section.addView(t);
+                porcentaje += 25;
+                handler.postDelayed(this, 1000);
+                } else {
+                    section.removeView(t);
+                }
+            }
+        };
+        handler.post(runnable);*/
+        new Thread(new Runnable() {
+            TextView t=new TextView(getApplicationContext());
+            int porcentaje=0;
+            @Override
+            public void run() {
+                while (porcentaje<=100) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            section.removeView(t);
+                            t.setText("Descargando Imagen: " + porcentaje + "%");
+                            section.addView(t);
+                            porcentaje+=25;
+                        }
+                    });
+                    try {
+                        Thread.sleep(1000);
+                    }catch (Exception e){
+                        System.out.println(e);
+                    }
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        section.removeView(t);
+                        ImageView imageView = new ImageView(getApplicationContext());
+                        imageView.setImageResource(R.drawable.ic_launcher_background); // R.drawable.my_image es el ID de la imagen en los recursos
+                        imageView.setPadding(0,20,0,20);
+                        section.addView(imageView);
+                    }
+                });
+
+            }
+        }).start();
     }
 }
