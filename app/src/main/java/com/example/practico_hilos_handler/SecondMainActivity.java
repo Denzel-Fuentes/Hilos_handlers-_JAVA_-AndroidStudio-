@@ -8,14 +8,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Layout;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SecondMainActivity extends AppCompatActivity {
@@ -72,8 +75,6 @@ public class SecondMainActivity extends AppCompatActivity {
         component = new Component(section);
         switch (option) {
             case 1:
-                /**Ocupamos las funciones de la clase para
-                 * agregar 2 inputs y 1 boton con su evento*/
                 title(option);
                 description(option);
                 //component.addEditText("input1");
@@ -87,8 +88,7 @@ public class SecondMainActivity extends AppCompatActivity {
             case 2:
                 title(option);
                 description(option);
-                //component.addButton("btn1","Procesar",v ->hola());
-                //component.addTextView("txt1","hola");
+                component.addButton("btn2","Iniciar Chat",view -> ej2());
                 break;
             case 3:
                 title(option);
@@ -149,6 +149,19 @@ public class SecondMainActivity extends AppCompatActivity {
         description.setText(descriptions[d-1]);
         description.setTextSize(15);
         section.addView(description);
+    }
+    public void activityTime(){
+        TextView time=new TextView(this);
+        time.post(new Runnable() {
+            int seconds=0;
+            @Override
+            public void run() {
+                time.setText("Tiempo transcurrido: "+seconds);
+                time.postDelayed(this,1000);
+                seconds++;
+            }
+        });
+        section.addView(time);
     }
     public void hola(){
         /**
@@ -214,5 +227,49 @@ public class SecondMainActivity extends AppCompatActivity {
 
             }
         }).start();
+    }
+    public void ej2(){
+        String[] conversation = {
+                "Patito Juan \n¡Hola! ¿Cómo estás?",
+                "Patito Miguel \n ¡Hola! Estoy bien, ¿y tú?",
+                "Patito Juan \nTambién estoy bien, gracias.",
+                "Patito Miguel \n ¿Qué has estado haciendo hoy?",
+                "Patito Juan \nHe estado trabajando en un proyecto de programación.",
+                "Patito Miguel \n ¡Eso suena interesante! Yo fui al gimnasio esta mañana.",
+                "Patito Juan \n¡Genial! Mantenerse activo es importante.",
+                "Patito Miguel \n Sí, definitivamente. ¡Hablemos luego!",
+                "Patito Juan \nClaro, ¡hablamos luego! ¡Adiós!"
+        };
+
+        List<TextView> textViews=new ArrayList<>();
+        for(int i=0;i<9;i++){
+            TextView t=new TextView(this);
+            t.setId(i);
+            t.setText(conversation[i]);
+            t.setPadding(0,20,0,20);
+            if(i%2!=0){
+                t.setGravity(Gravity.END);
+            }
+            textViews.add(t);
+        }
+        Runnable runnable=new Runnable() {
+            int quantity=0;
+            LinearLayout layout = new LinearLayout(getApplicationContext());
+            @Override
+            public void run() {
+                layout.setOrientation(LinearLayout.VERTICAL);
+                section.removeView(layout);
+                if(quantity<textViews.size()){
+                    layout.addView(textViews.get(quantity));
+                    quantity++;
+                }else{
+                    layout.removeAllViews();
+                    quantity=0;
+                }
+                section.addView(layout);
+                handler.postDelayed(this,1500);
+            }
+        };
+        handler.post(runnable);
     }
 }
