@@ -26,6 +26,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class SecondMainActivity extends AppCompatActivity {
     String[] descriptions={
@@ -59,6 +62,7 @@ public class SecondMainActivity extends AppCompatActivity {
     LinearLayout section;
     Component component;
     Handler handler;
+    int option=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +71,6 @@ public class SecondMainActivity extends AppCompatActivity {
         txtTittle = findViewById(R.id.txtTittle);
         btnBackToMenu = findViewById(R.id.btnBackToMenu);
         section = findViewById(R.id.layoutComponent);
-        int option=0;
         String message=null;
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -96,19 +99,11 @@ public class SecondMainActivity extends AppCompatActivity {
         btnBackToMenu.setOnClickListener(view -> finish());
     }
     public void initProyect(int option){
-        /*Instanciamos la clase y le pasamos como parametro el
-          Linearlayout donde agregaremos etiquetas con sus propiedades*/
         component = new Component(section);
         switch (option) {
             case 1:
                 title(option);
                 description(option);
-                //component.addEditText("input1");
-                //component.addEditText("input1");
-                /**pasamos como parametro el ID , texto del boton y su eventoClick
-                 * que debe de ser una expresion lambda con una funcion
-                 * Dentro de la funcion se muestra como acceder a los componentes
-                 * creados con la clase*/
                 component.addButton("btn1","Descargar",v->ej1());
                 break;
             case 2:
@@ -159,6 +154,8 @@ public class SecondMainActivity extends AppCompatActivity {
             case 12:
                 title(9);
                 description(option);
+                component.addEditText("txt12");
+                component.addButton("btn12","Imprimir",view -> ej12());
                 break;
             default:
                 // Manejar opción no válida si es necesario
@@ -314,6 +311,36 @@ public class SecondMainActivity extends AppCompatActivity {
                 if(isFinishing()==false){
                     handler.postDelayed(this,3000);
                     Notification.showHeadUpNotification(getApplicationContext(), "Título de la Notificación", "Contenido de la notificación");
+                }
+            }
+        });
+    }
+    public void ej12(){
+        Recursividad recursividad=new Recursividad();
+        EditText editText= (EditText) component.getViewById("txt12");
+        recursividad.setText(editText.getText().toString());
+        ExecutorService service= Executors.newSingleThreadExecutor();
+        Future<Recursividad.Functions> result=service.submit(recursividad);
+        handle(result);
+    }
+    public void handle(Future<Recursividad.Functions> future){
+        handler.post(new Runnable() {
+            TextView textView=new TextView(getApplicationContext());
+            String text="";
+            @Override
+            public void run() {
+                try {
+                    Recursividad.Functions responsive=future.get();
+                    switch (option){
+                        case 12:
+                            text=responsive.getInvertText();
+                            break;
+                    }
+                    String result=text.isEmpty()?"No se ingreso nada":"Resultado: "+text;
+                    textView.setText(result);
+                    section.addView(textView);
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
             }
         });
