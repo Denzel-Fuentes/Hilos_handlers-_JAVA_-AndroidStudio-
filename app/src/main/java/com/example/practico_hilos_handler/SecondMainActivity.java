@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -63,11 +64,28 @@ public class SecondMainActivity extends AppCompatActivity {
         section = findViewById(R.id.layoutComponent);
         // 0 es el valor por defecto si no se encuentra "option"
         Intent intent = getIntent();
-        int option = intent.getIntExtra("option", 0);
+        int option = intent.getIntExtra("option", 3);
         txtTittle.setText("Ejercicio "+option);
         txtTittle.setTypeface(null, Typeface.BOLD);
         btnBackToMenu.setOnClickListener(view -> finish());
         initProyect(option);
+        Bundle bundle=getIntent().getExtras();
+        String mensaje = bundle.getString("message");
+        if(mensaje!=null){
+            handler.post(new Runnable() {
+                int time=0;
+                @Override
+                public void run() {
+                    if(time==3){
+                        Toast.makeText(getApplicationContext(),mensaje,Toast.LENGTH_SHORT).show();
+                    } else if (time<=3) {
+                        time++;
+                        handler.postDelayed(this,1000);
+                    }
+
+                }
+            });
+        }
     }
     public void initProyect(int option){
         /*Instanciamos la clase y le pasamos como parametro el
@@ -93,7 +111,8 @@ public class SecondMainActivity extends AppCompatActivity {
             case 3:
                 title(option);
                 description(option);
-
+                component.addEditText("txt1");
+                component.addButton("btn3","Enviar Mensaje",view -> ej3());
                 break;
             case 4:
                 title(option);
@@ -271,5 +290,11 @@ public class SecondMainActivity extends AppCompatActivity {
             }
         };
         handler.post(runnable);
+    }
+    public void ej3(){
+        EditText editText  = (EditText) component.getViewById("txt1");
+        Intent intent = new Intent(SecondMainActivity.this, MainActivity.class);
+        intent.putExtra("message",editText.getText().toString());
+        startActivity(intent);
     }
 }

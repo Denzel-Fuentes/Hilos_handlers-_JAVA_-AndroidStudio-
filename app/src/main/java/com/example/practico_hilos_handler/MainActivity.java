@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     Button btnEjercicio;
@@ -17,6 +18,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             int buttonId = getResources().getIdentifier("btnEjercicio_" + i, "id", getPackageName());
             btnEjercicio = findViewById(buttonId);
             btnEjercicio.setOnClickListener(this);
+        }
+        Bundle bundle=getIntent().getExtras();
+        if(bundle!=null){
+            String mensaje = bundle.getString("message");
+            System.out.println(mensaje);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        Thread.sleep(3000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(),mensaje,Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        Thread.sleep(2500);
+                        Intent intent =new Intent(MainActivity.this,SecondMainActivity.class);
+                        intent.putExtra("message","Main: Tengo Hambre");
+                        startActivity(intent);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
     }
 
