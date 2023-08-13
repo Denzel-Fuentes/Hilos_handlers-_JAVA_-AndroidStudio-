@@ -7,17 +7,12 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Layout;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.List;
 
 public class SecondMainActivity extends AppCompatActivity {
     String[] descriptions={
@@ -105,6 +100,11 @@ public class SecondMainActivity extends AppCompatActivity {
             case 5:
                 title(option);
                 description(option);
+                Ej5_cronometro cronometro = new Ej5_cronometro();
+                component.addTextView("txtTiempo","");
+                component.addButton("btnDetener","Detener",v->cronometro.detener());
+                component.addButton("btnIniciar","Iniciar",v->cronometro.Comenzar());
+                component.addButton("btnReiniciar","Reiniciar",v->cronometro.reiniciar());
                 break;
             case 6:
                 title(option);
@@ -219,4 +219,62 @@ public class SecondMainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+    class Ej5_cronometro{
+        private int minutos , segundos,horas;
+        private boolean isRunning;
+        private Handler handler;
+        private Runnable runnable;
+        Ej5_cronometro(){this.minutos = 0;this.horas = 0;this.segundos =0;this.handler = new Handler();this.isRunning =false;}
+        private TextView txtTiempo;
+        public void detener(){
+            this.txtTiempo = (TextView) component.getViewById("txtTiempo");
+            if (isRunning) {
+                handler.removeCallbacks(runnable);
+                //elapsedTime = System.currentTimeMillis() - startTime;
+                isRunning = false;
+            }
+        }
+        public void Comenzar(){
+            this.txtTiempo = (TextView) component.getViewById("txtTiempo");
+            if (!isRunning){
+                isRunning = true;
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (segundos == 59) {
+                            segundos = 0;
+                            if (minutos == 59) {
+                                minutos = 0;
+                                horas++;
+                            } else {
+                                minutos++;
+                            }
+                        } else {
+                            segundos++;
+                        }
+                        actualizarTiempo(horas,minutos,segundos);
+                        handler.postDelayed(this, 1000);
+                    }
+                };
+                handler.postDelayed(runnable, 0);
+            }
+        }
+        public void reiniciar(){
+            this.txtTiempo = (TextView) component.getViewById("txtTiempo");
+            if (!isRunning) {
+                actualizarTiempo(0,0,0);
+            }
+        }
+        private void actualizarTiempo(int horas , int minutos, int segundos) {
+            final String timeText = String.format("%02d:%02d:%02d",horas,  minutos, segundos);
+            txtTiempo.post(new Runnable() {
+                @Override
+                public void run() {
+                    txtTiempo.setText(timeText);
+                }
+            });
+        }
+    }
+
 }
