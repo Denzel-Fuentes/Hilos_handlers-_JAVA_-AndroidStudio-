@@ -150,12 +150,15 @@ public class SecondMainActivity extends AppCompatActivity {
             case 11:
                 title(9);
                 description(option);
+                component.addEditText("txt11a",true);
+                component.addEditText("txt11b",true);
+                component.addButton("btn11","MCD",view -> ej11());
                 break;
             case 12:
                 title(9);
                 description(option);
                 component.addEditText("txt12");
-                component.addButton("btn12","Imprimir",view -> ej12());
+                component.addButton("btn12","Invertir",view -> ej12());
                 break;
             default:
                 // Manejar opción no válida si es necesario
@@ -315,12 +318,23 @@ public class SecondMainActivity extends AppCompatActivity {
             }
         });
     }
+    public void ej11(){
+        EditText editText=(EditText) component.getViewById("txt11a");
+        EditText editText2=(EditText) component.getViewById("txt11b");
+        Recursividad recursividad=new Recursividad();
+        recursividad.setNumber(Integer.parseInt(editText.getText().toString()));
+        recursividad.setNumbertwo(Integer.parseInt(editText2.getText().toString()));
+        service(recursividad);
+    }
     public void ej12(){
         Recursividad recursividad=new Recursividad();
         EditText editText= (EditText) component.getViewById("txt12");
         recursividad.setText(editText.getText().toString());
+        service(recursividad);
+    }
+    public void service(Recursividad instance){
         ExecutorService service= Executors.newSingleThreadExecutor();
-        Future<Recursividad.Functions> result=service.submit(recursividad);
+        Future<Recursividad.Functions> result=service.submit(instance);
         handle(result);
     }
     public void handle(Future<Recursividad.Functions> future){
@@ -332,6 +346,9 @@ public class SecondMainActivity extends AppCompatActivity {
                 try {
                     Recursividad.Functions responsive=future.get();
                     switch (option){
+                        case 11:
+                            text=String.valueOf(responsive.getCalculeMCD());
+                            break;
                         case 12:
                             text=responsive.getInvertText();
                             break;

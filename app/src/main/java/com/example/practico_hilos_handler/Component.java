@@ -1,6 +1,7 @@
 package com.example.practico_hilos_handler;
 
 import android.content.Context;
+import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -47,10 +48,16 @@ public class Component {
         elements.add(elementInfo);
     }
     public void addEditText(String id){
-        elements.add(new ElementInfo(
-                ElementInfo.TYPE_EDIT_TEXT,
+        elements.add(new ElementInfo(ElementInfo.TYPE_EDIT_TEXT,
                 "Input",
                 id
+        ));
+    }
+    public void addEditText(String id, boolean b){
+        elements.add(new ElementInfo(ElementInfo.TYPE_EDIT_TEXT,
+                "Input",
+                id,
+                b
         ));
     }
     public View getViewById(String uniqueId) {
@@ -64,11 +71,18 @@ public class Component {
         private View.OnClickListener clickListener;
         String content;
         String id;
+        boolean isNumber=false;
 
-        ElementInfo(int elementType, String content,String id) {
+        ElementInfo(int elementType, String content, String id) {
             this.elementType = elementType;
             this.content = content;
             this.id = id;
+        }
+        ElementInfo(int elementType, String content, String id, boolean isNumber) {
+            this.elementType = elementType;
+            this.content = content;
+            this.id = id;
+            this.isNumber = isNumber;
         }
 
         View createView(Context context) {
@@ -104,6 +118,9 @@ public class Component {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             ));
+            if(isNumber){
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+            }
             editText.setHint(content);
             return editText;
         }
