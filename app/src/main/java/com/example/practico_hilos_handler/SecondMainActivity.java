@@ -1,7 +1,12 @@
 package com.example.practico_hilos_handler;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -62,16 +67,18 @@ public class SecondMainActivity extends AppCompatActivity {
         txtTittle = findViewById(R.id.txtTittle);
         btnBackToMenu = findViewById(R.id.btnBackToMenu);
         section = findViewById(R.id.layoutComponent);
-        // 0 es el valor por defecto si no se encuentra "option"
-        Intent intent = getIntent();
-        int option = intent.getIntExtra("option", 3);
+        int option=0;
+        String message=null;
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            message = bundle.getString("message");
+            option= bundle.getInt("option");
+        }
         txtTittle.setText("Ejercicio "+option);
         txtTittle.setTypeface(null, Typeface.BOLD);
-        btnBackToMenu.setOnClickListener(view -> finish());
         initProyect(option);
-        Bundle bundle=getIntent().getExtras();
-        String mensaje = bundle.getString("message");
-        if(mensaje!=null){
+        if(message!=null && option==3){
+            final String mensaje=message;
             handler.post(new Runnable() {
                 int time=0;
                 @Override
@@ -86,6 +93,7 @@ public class SecondMainActivity extends AppCompatActivity {
                 }
             });
         }
+        btnBackToMenu.setOnClickListener(view -> finish());
     }
     public void initProyect(int option){
         /*Instanciamos la clase y le pasamos como parametro el
@@ -117,6 +125,8 @@ public class SecondMainActivity extends AppCompatActivity {
             case 4:
                 title(option);
                 description(option);
+                activityTime();
+                component.addButton("bnt4","Iniciar Notificaciones",view -> ej4());
                 break;
             case 5:
                 title(option);
@@ -296,5 +306,16 @@ public class SecondMainActivity extends AppCompatActivity {
         Intent intent = new Intent(SecondMainActivity.this, MainActivity.class);
         intent.putExtra("message",editText.getText().toString());
         startActivity(intent);
+    }
+    public void ej4(){
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(isFinishing()==false){
+                    handler.postDelayed(this,3000);
+                    Notification.showHeadUpNotification(getApplicationContext(), "Título de la Notificación", "Contenido de la notificación");
+                }
+            }
+        });
     }
 }
