@@ -2,7 +2,12 @@ package com.example.practico_hilos_handler;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -67,13 +72,33 @@ public class SecondMainActivity extends AppCompatActivity {
         txtTittle = findViewById(R.id.txtTittle);
         btnBackToMenu = findViewById(R.id.btnBackToMenu);
         section = findViewById(R.id.layoutComponent);
-        // 0 es el valor por defecto si no se encuentra "option"
-        Intent intent = getIntent();
-        int option = intent.getIntExtra("option", 0);
+        int option=0;
+        String message=null;
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            message = bundle.getString("message");
+            option= bundle.getInt("option");
+        }
         txtTittle.setText("Ejercicio "+option);
         txtTittle.setTypeface(null, Typeface.BOLD);
-        btnBackToMenu.setOnClickListener(view -> finish());
         initProyect(option);
+        if(message!=null && option==3){
+            final String mensaje=message;
+            handler.post(new Runnable() {
+                int time=0;
+                @Override
+                public void run() {
+                    if(time==3){
+                        Toast.makeText(getApplicationContext(),mensaje,Toast.LENGTH_SHORT).show();
+                    } else if (time<=3) {
+                        time++;
+                        handler.postDelayed(this,1000);
+                    }
+
+                }
+            });
+        }
+        btnBackToMenu.setOnClickListener(view -> finish());
     }
     public void initProyect(int option){
         /*Instanciamos la clase y le pasamos como parametro el
@@ -101,11 +126,14 @@ public class SecondMainActivity extends AppCompatActivity {
             case 3:
                 title(option);
                 description(option);
-
+                component.addEditText("txt1");
+                component.addButton("btn3","Enviar Mensaje",view -> ej3());
                 break;
             case 4:
                 title(option);
                 description(option);
+                activityTime();
+                component.addButton("bnt4","Iniciar Notificaciones",view -> ej4());
                 break;
             case 5:
                 title(option);
@@ -288,6 +316,7 @@ public class SecondMainActivity extends AppCompatActivity {
         };
         handler.post(runnable);
     }
+
     class Ej5_cronometro{
         private int minutos , segundos,horas;
         private boolean isRunning;
@@ -390,6 +419,24 @@ public class SecondMainActivity extends AppCompatActivity {
 
             }
         }));
+    }
+
+    public void ej3(){
+        EditText editText  = (EditText) component.getViewById("txt1");
+        Intent intent = new Intent(SecondMainActivity.this, MainActivity.class);
+        intent.putExtra("message",editText.getText().toString());
+        startActivity(intent);
+    }
+    public void ej4(){
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(isFinishing()==false){
+                    handler.postDelayed(this,3000);
+                    Notification.showHeadUpNotification(getApplicationContext(), "Título de la Notificación", "Contenido de la notificación");
+                }
+            }
+        });
     }
 
 }
