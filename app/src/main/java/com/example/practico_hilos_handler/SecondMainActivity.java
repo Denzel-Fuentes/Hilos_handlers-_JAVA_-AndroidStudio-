@@ -30,11 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-<<<<<<< HEAD
-
-=======
 import java.util.concurrent.Future;
->>>>>>> 69bd73b70ec00036d06c74df8d8c1328a89b9d69
+
 
 public class SecondMainActivity extends AppCompatActivity {
     String[] descriptions={
@@ -110,17 +107,8 @@ public class SecondMainActivity extends AppCompatActivity {
             case 1:
                 title(option);
                 description(option);
-<<<<<<< HEAD
                 component.addEditText("input1");
                 component.addEditText("input2");
-                //component.addEditText("input1");
-                //component.addEditText("input1");
-                /**pasamos como parametro el ID , texto del boton y su eventoClick
-                 * que debe de ser una expresion lambda con una funcion
-                 * Dentro de la funcion se muestra como acceder a los componentes
-                 * creados con la clase*/
-=======
->>>>>>> 69bd73b70ec00036d06c74df8d8c1328a89b9d69
                 component.addButton("btn1","Descargar",v->ej1());
                 break;
             case 2:
@@ -158,18 +146,29 @@ public class SecondMainActivity extends AppCompatActivity {
             case 7:
                 title(option);
                 description(option);
+                Ej7_task ej7_tasks = new Ej7_task();
+                component.addButton("btn7","Agregar",v->ej7_tasks.addTask());
+                component.addButton("btn8","Eliminar",v->ej7_tasks.removetask());
                 break;
             case 8:
                 title(option);
                 description(option);
+                ImageView imageView = new ImageView(section.getContext());
+                imageView.setImageResource(R.drawable.image1);
+                section.addView(imageView);
+                component.addButton("btn8","Procesar",v->ej8());
                 break;
             case 9:
                 title(option);
                 description(option);
+                component.addEditText("input9");
+                component.addButton("btn","Calcular Max",v->ej9());
                 break;
             case 10:
                 title(9);
                 description(option);
+                component.addEditText("input10");
+                component.addButton("btn","Sumar",v->ej10());
                 break;
             case 11:
                 title(9);
@@ -216,16 +215,7 @@ public class SecondMainActivity extends AppCompatActivity {
         });
         section.addView(time);
     }
-    public void hola(){
-        /**
-         * Usamos la funcion getViewById para obtener el componente que creamos pasando
-         * como parametro el ID que le asignamos y lo casteamos
-         * al tipo de objeto al que pertenece Button, TextView,etc ...**/
-        TextView txt  = (TextView) component.getViewById("txt1");
-        EditText input = (EditText) component.getViewById("input1");
-        txt.setText(input.getText().toString());
-        Toast.makeText(this,"holaaaa",Toast.LENGTH_SHORT).show();
-    }
+
     public void ej1(){
         /*
         Esto seria la forma de hacerlo con Handlers y Runnables
@@ -326,7 +316,23 @@ public class SecondMainActivity extends AppCompatActivity {
         };
         handler.post(runnable);
     }
-
+    public void ej3(){
+        EditText editText  = (EditText) component.getViewById("txt1");
+        Intent intent = new Intent(SecondMainActivity.this, MainActivity.class);
+        intent.putExtra("message",editText.getText().toString());
+        startActivity(intent);
+    }
+    public void ej4(){
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(isFinishing()==false){
+                    handler.postDelayed(this,3000);
+                    Notification.showHeadUpNotification(getApplicationContext(), "Título de la Notificación", "Contenido de la notificación");
+                }
+            }
+        });
+    }
     class Ej5_cronometro{
         private int minutos , segundos,horas;
         private boolean isRunning;
@@ -430,27 +436,122 @@ public class SecondMainActivity extends AppCompatActivity {
             }
         }));
     }
+    class Ej7_task{
+        private ExecutorService executor;
+        private int numTask=0,numTaskcompleted = 0;
+        private
+        Ej7_task(){
+            this.executor = Executors.newSingleThreadExecutor();
+        }
+        public void addTask(){
+            numTask++;
+            if (numTask == 1){
+                component.addTextView(null, "Tarea en ejecucion");
+            }else {
+                component.addTextView(null, "Tarea Pendiente....");
+            }
 
-    public void ej3(){
-        EditText editText  = (EditText) component.getViewById("txt1");
-        Intent intent = new Intent(SecondMainActivity.this, MainActivity.class);
-        intent.putExtra("message",editText.getText().toString());
-        startActivity(intent);
-    }
-    public void ej4(){
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if(isFinishing()==false){
-                    handler.postDelayed(this,3000);
-                    Notification.showHeadUpNotification(getApplicationContext(), "Título de la Notificación", "Contenido de la notificación");
+            if(numTask ==1){
+                this.executeTasks();
+            }
+        }
+        public void executeTasks(){
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                   while (true){
+
+                           if (numTask >1){
+                               updateView();
+                           }
+                           try {
+                               Thread.sleep(3000); // Simulación de 1 segundo de ejecución
+                           } catch (InterruptedException e) {
+                               Thread.currentThread().interrupt();
+                               return;
+                           }
+                       if (numTask >0){
+                           updateViewTaskCompleted();
+                       }
+                   }
                 }
+            });
+        }
+        public void removetask(){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (numTask>=-1)component.deleteAllComponents("txt",1);
+                }
+            });
+            numTask--;
+        }
+        public void updateViewTaskCompleted(){
+            final  int c  = numTask;
+            numTaskcompleted++;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    component.deleteAllComponents("txt",c);
+                    component.addTextView(null,"Tarea Completada");
+                }
+            });
+            numTask--;
+        }
+        public void updateView(){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < numTask ; i++) {
+                        component.addTextView(null, "Tarea Pendiente....");
+                    }
+                }
+            });
+        }
+    }
+    public void ej8(){
+        component.addTextView(null,"Procesando Imagen .....");
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.execute(()->{
+            try {
+                Thread.sleep(3000);
+                section.post(() -> {
+                    component.deleteAllComponents("txt",1);
+                    ImageView imageView = new ImageView(section.getContext());
+                    imageView.setImageResource(R.drawable.image);
+                    // Crear un objeto de parámetros para establecer el margen
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    // Establecer el margen superior de 10 píxeles
+                    layoutParams.setMargins(100, 10, 0, 0);
+                    imageView.setLayoutParams(layoutParams);
+                    section.addView(imageView);
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         });
     }
-<<<<<<< HEAD
-
-=======
+    public void ej9(){
+        EditText editText = (EditText) component.getViewById("input9");
+        //Creamos el objeto recursividad
+        Recursividad recursividad = new Recursividad();
+        //Ingresamos los datos que utilizaremos al hacer la recursin
+        recursividad.setText(editText.getText().toString());
+        //le pasasmo a service la recursividad
+        service(recursividad);
+    }
+    public void ej10(){
+        EditText editText = (EditText) component.getViewById("input10");
+        //Creamos el objeto recursividad
+        Recursividad recursividad = new Recursividad();
+        //Ingresamos los datos que utilizaremos al hacer la recursin
+        recursividad.setNumber(Integer.parseInt(editText.getText().toString()));
+        //le pasasmo a service la recursividad
+        service(recursividad);
+    }
     public void ej11(){
         EditText editText=(EditText) component.getViewById("txt11a");
         EditText editText2=(EditText) component.getViewById("txt11b");
@@ -479,6 +580,12 @@ public class SecondMainActivity extends AppCompatActivity {
                 try {
                     Recursividad.Functions responsive=future.get();
                     switch (option){
+                        case 9:
+                            text = String.valueOf(responsive.getMaxNumberArray());
+                            break;
+                        case 10:
+                            text = String.valueOf(responsive.getSumNumberNatural());
+                            break;
                         case 11:
                             text=String.valueOf(responsive.getCalculeMCD());
                             break;
@@ -495,5 +602,5 @@ public class SecondMainActivity extends AppCompatActivity {
             }
         });
     }
->>>>>>> 69bd73b70ec00036d06c74df8d8c1328a89b9d69
+
 }

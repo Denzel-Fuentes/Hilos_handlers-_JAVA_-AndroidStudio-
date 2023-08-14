@@ -74,6 +74,22 @@ public class Component {
                 b
         ));
     }
+    public void deleteAllComponents(String type,int cantidad){
+        int eliminados = 0;
+        switch (type){
+            case "txt" :
+                int count = this.layout.getChildCount();
+                for (int i = count - 1; i >= 0; i--) {
+                    View view = this.layout.getChildAt(i);
+                    if(eliminados == cantidad) break;
+                    if (view instanceof TextView) {
+                        eliminados++;
+                        this.layout.removeView(view);
+                    }
+                }
+                break;
+        }
+    }
     public View getViewById(String uniqueId) {
         return viewMap.get(uniqueId);
     }
