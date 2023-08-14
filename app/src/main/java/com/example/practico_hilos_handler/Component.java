@@ -18,23 +18,37 @@ public class Component {
     // Mapa para almacenar componentes por ID personalizado
     private Map<String, View> viewMap = new HashMap<>();
     private List<ElementInfo> elements = new ArrayList<>();
+    private TextView txt;
     public Component(ViewGroup layout) {
         this.layout = layout;
     }
     public void render(){
+        List<ElementInfo> elementsToRemove = new ArrayList<>();
         //Renderizamos los elementos en el orden en el que los seteamos
         for (ElementInfo elementInfo: elements) {
             View view = elementInfo.createView(layout.getContext());
             layout.addView(view);
             viewMap.put(elementInfo.getID(),view);
+            if (elementInfo.getID().equals("txt")) {
+                txt = (TextView) this.getViewById("txt");
+            }
+            elementsToRemove.add(elementInfo);
         }
+        elements.removeAll(elementsToRemove);
+
     }
-    public void addTextView(String id, String text){
+    public TextView addTextView(String id, String text){
+        String ids = (id == null) ? "txt": id;
         elements.add(new ElementInfo(
                 ElementInfo.TYPE_TEXT_VIEW,
                 text,
-                id
+                ids
         ));
+        if (id==null){
+            this.render();
+            return txt;
+        }
+        return null;
     }
     // Agrega Botones a la lista, pasando como parametro una funcion que sera su Clicklistener
     public void addButton(String id,String text,View.OnClickListener clickListener){

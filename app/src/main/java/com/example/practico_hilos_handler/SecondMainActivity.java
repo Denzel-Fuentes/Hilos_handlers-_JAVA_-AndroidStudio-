@@ -1,5 +1,6 @@
 package com.example.practico_hilos_handler;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -7,13 +8,10 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-<<<<<<< HEAD
-=======
-import android.text.Layout;
+
+
+import android.os.Message;
 import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
->>>>>>> 55d2b4802df5a0d0449c7e9f9faf585f6e00d762
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,12 +20,13 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-<<<<<<< HEAD
-=======
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
->>>>>>> 55d2b4802df5a0d0449c7e9f9faf585f6e00d762
+
 public class SecondMainActivity extends AppCompatActivity {
     String[] descriptions={
             "Crea una aplicación que descargue imágenes en segundo plano utilizando tanto Threads como Coroutines. Muestra las imágenes en una lista o cuadrícula cuando se descarguen.",
@@ -120,6 +119,8 @@ public class SecondMainActivity extends AppCompatActivity {
             case 6:
                 title(option);
                 description(option);
+                component.addEditText("input1");
+                component.addButton("","Descargar",v->ej6());
                 break;
             case 7:
                 title(option);
@@ -243,8 +244,50 @@ public class SecondMainActivity extends AppCompatActivity {
             }
         }).start();
     }
-<<<<<<< HEAD
+    public void ej2(){
+        String[] conversation = {
+                "Patito Juan \n¡Hola! ¿Cómo estás?",
+                "Patito Miguel \n ¡Hola! Estoy bien, ¿y tú?",
+                "Patito Juan \nTambién estoy bien, gracias.",
+                "Patito Miguel \n ¿Qué has estado haciendo hoy?",
+                "Patito Juan \nHe estado trabajando en un proyecto de programación.",
+                "Patito Miguel \n ¡Eso suena interesante! Yo fui al gimnasio esta mañana.",
+                "Patito Juan \n¡Genial! Mantenerse activo es importante.",
+                "Patito Miguel \n Sí, definitivamente. ¡Hablemos luego!",
+                "Patito Juan \nClaro, ¡hablamos luego! ¡Adiós!"
+        };
 
+        List<TextView> textViews=new ArrayList<>();
+        for(int i=0;i<9;i++){
+            TextView t=new TextView(this);
+            t.setId(i);
+            t.setText(conversation[i]);
+            t.setPadding(0,20,0,20);
+            if(i%2!=0){
+                t.setGravity(Gravity.END);
+            }
+            textViews.add(t);
+        }
+        Runnable runnable=new Runnable() {
+            int quantity=0;
+            LinearLayout layout = new LinearLayout(getApplicationContext());
+            @Override
+            public void run() {
+                layout.setOrientation(LinearLayout.VERTICAL);
+                section.removeView(layout);
+                if(quantity<textViews.size()){
+                    layout.addView(textViews.get(quantity));
+                    quantity++;
+                }else{
+                    layout.removeAllViews();
+                    quantity=0;
+                }
+                section.addView(layout);
+                handler.postDelayed(this,1500);
+            }
+        };
+        handler.post(runnable);
+    }
     class Ej5_cronometro{
         private int minutos , segundos,horas;
         private boolean isRunning;
@@ -301,51 +344,52 @@ public class SecondMainActivity extends AppCompatActivity {
             });
         }
     }
-
-=======
-    public void ej2(){
-        String[] conversation = {
-                "Patito Juan \n¡Hola! ¿Cómo estás?",
-                "Patito Miguel \n ¡Hola! Estoy bien, ¿y tú?",
-                "Patito Juan \nTambién estoy bien, gracias.",
-                "Patito Miguel \n ¿Qué has estado haciendo hoy?",
-                "Patito Juan \nHe estado trabajando en un proyecto de programación.",
-                "Patito Miguel \n ¡Eso suena interesante! Yo fui al gimnasio esta mañana.",
-                "Patito Juan \n¡Genial! Mantenerse activo es importante.",
-                "Patito Miguel \n Sí, definitivamente. ¡Hablemos luego!",
-                "Patito Juan \nClaro, ¡hablamos luego! ¡Adiós!"
-        };
-
-        List<TextView> textViews=new ArrayList<>();
-        for(int i=0;i<9;i++){
-            TextView t=new TextView(this);
-            t.setId(i);
-            t.setText(conversation[i]);
-            t.setPadding(0,20,0,20);
-            if(i%2!=0){
-                t.setGravity(Gravity.END);
+    public void ej6(){
+        /**
+         * usuarios descargar archivos grandes y muestre el progreso de la
+         * descarga utilizando tanto Handlers como Executors para realizar
+         * la tarea de descarga.*/
+        ExecutorService executor;
+        EditText input1 = (EditText) component.getViewById("input1");
+        TextView txt = component.addTextView(null,"1");
+        final int size =Integer.parseInt(input1.getText().toString());
+        executor = Executors.newFixedThreadPool(1);
+        Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(@NonNull Message msg) {
+                if (msg.what == 1) {
+                    txt.setText("Porcentaje: "+msg.arg1+"%  Progreso: "+msg.arg2 + " Estado: Descargado ✅ ");
+                }else {
+                    txt.setText("Porcentaje: "+msg.arg1+"%  Progreso: "+msg.arg2 + " Estado: Descargando.... ");
+                }
+                return true;
             }
-            textViews.add(t);
-        }
-        Runnable runnable=new Runnable() {
-            int quantity=0;
-            LinearLayout layout = new LinearLayout(getApplicationContext());
+
+        });
+        executor.execute((new Runnable() {
+            int progress;
             @Override
             public void run() {
-                layout.setOrientation(LinearLayout.VERTICAL);
-                section.removeView(layout);
-                if(quantity<textViews.size()){
-                    layout.addView(textViews.get(quantity));
-                    quantity++;
-                }else{
-                    layout.removeAllViews();
-                    quantity=0;
+                while (progress < size){
+                    progress++;
+                    int percentage = (progress*100)/size;
+                    Message message = new Message();
+                    message.arg1 = percentage;
+                    message.arg2 = progress;
+                    if(progress == size){
+                        message.what = 1;
+                    }else {message.what =0;}
+
+                    handler.sendMessage(message);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-                section.addView(layout);
-                handler.postDelayed(this,1500);
+
             }
-        };
-        handler.post(runnable);
+        }));
     }
->>>>>>> 55d2b4802df5a0d0449c7e9f9faf585f6e00d762
+
 }
