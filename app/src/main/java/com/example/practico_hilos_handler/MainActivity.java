@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bundle=new Bundle();
-        for (int i = 1; i <= 12; i++) {
+        for (int i = 1; i <= 14; i++) {
             int buttonId = getResources().getIdentifier("btnEjercicio_" + i, "id", getPackageName());
             btnEjercicio = findViewById(buttonId);
             btnEjercicio.setOnClickListener(this);
