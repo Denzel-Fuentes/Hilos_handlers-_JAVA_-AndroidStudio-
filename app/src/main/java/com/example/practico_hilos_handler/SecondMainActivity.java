@@ -30,7 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+<<<<<<< HEAD
 
+=======
+import java.util.concurrent.Future;
+>>>>>>> 69bd73b70ec00036d06c74df8d8c1328a89b9d69
 
 public class SecondMainActivity extends AppCompatActivity {
     String[] descriptions={
@@ -64,6 +68,7 @@ public class SecondMainActivity extends AppCompatActivity {
     LinearLayout section;
     Component component;
     Handler handler;
+    int option=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +77,6 @@ public class SecondMainActivity extends AppCompatActivity {
         txtTittle = findViewById(R.id.txtTittle);
         btnBackToMenu = findViewById(R.id.btnBackToMenu);
         section = findViewById(R.id.layoutComponent);
-        int option=0;
         String message=null;
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -101,13 +105,12 @@ public class SecondMainActivity extends AppCompatActivity {
         btnBackToMenu.setOnClickListener(view -> finish());
     }
     public void initProyect(int option){
-        /*Instanciamos la clase y le pasamos como parametro el
-          Linearlayout donde agregaremos etiquetas con sus propiedades*/
         component = new Component(section);
         switch (option) {
             case 1:
                 title(option);
                 description(option);
+<<<<<<< HEAD
                 component.addEditText("input1");
                 component.addEditText("input2");
                 //component.addEditText("input1");
@@ -116,6 +119,8 @@ public class SecondMainActivity extends AppCompatActivity {
                  * que debe de ser una expresion lambda con una funcion
                  * Dentro de la funcion se muestra como acceder a los componentes
                  * creados con la clase*/
+=======
+>>>>>>> 69bd73b70ec00036d06c74df8d8c1328a89b9d69
                 component.addButton("btn1","Descargar",v->ej1());
                 break;
             case 2:
@@ -169,10 +174,15 @@ public class SecondMainActivity extends AppCompatActivity {
             case 11:
                 title(9);
                 description(option);
+                component.addEditText("txt11a",true);
+                component.addEditText("txt11b",true);
+                component.addButton("btn11","MCD",view -> ej11());
                 break;
             case 12:
                 title(9);
                 description(option);
+                component.addEditText("txt12");
+                component.addButton("btn12","Invertir",view -> ej12());
                 break;
             default:
                 // Manejar opción no válida si es necesario
@@ -438,5 +448,52 @@ public class SecondMainActivity extends AppCompatActivity {
             }
         });
     }
+<<<<<<< HEAD
 
+=======
+    public void ej11(){
+        EditText editText=(EditText) component.getViewById("txt11a");
+        EditText editText2=(EditText) component.getViewById("txt11b");
+        Recursividad recursividad=new Recursividad();
+        recursividad.setNumber(Integer.parseInt(editText.getText().toString()));
+        recursividad.setNumbertwo(Integer.parseInt(editText2.getText().toString()));
+        service(recursividad);
+    }
+    public void ej12(){
+        Recursividad recursividad=new Recursividad();
+        EditText editText= (EditText) component.getViewById("txt12");
+        recursividad.setText(editText.getText().toString());
+        service(recursividad);
+    }
+    public void service(Recursividad instance){
+        ExecutorService service= Executors.newSingleThreadExecutor();
+        Future<Recursividad.Functions> result=service.submit(instance);
+        handle(result);
+    }
+    public void handle(Future<Recursividad.Functions> future){
+        handler.post(new Runnable() {
+            TextView textView=new TextView(getApplicationContext());
+            String text="";
+            @Override
+            public void run() {
+                try {
+                    Recursividad.Functions responsive=future.get();
+                    switch (option){
+                        case 11:
+                            text=String.valueOf(responsive.getCalculeMCD());
+                            break;
+                        case 12:
+                            text=responsive.getInvertText();
+                            break;
+                    }
+                    String result=text.isEmpty()?"No se ingreso nada":"Resultado: "+text;
+                    textView.setText(result);
+                    section.addView(textView);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+>>>>>>> 69bd73b70ec00036d06c74df8d8c1328a89b9d69
 }
